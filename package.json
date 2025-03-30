@@ -12,6 +12,9 @@
   "license": "ISC",
   "description": "",
   "type": "module",
+  "mastra": {
+    "entry": "packages/mastra/src/index.ts"
+  },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.2.2",
     "@mastra/core": "^0.7.0",

@@ -10,7 +10,7 @@
     "outDir": "dist"
   },
   "include": [
-    "src/**/*"
+    "packages/mastra/src/**/*"
   ],
   "exclude": [
     "node_modules",

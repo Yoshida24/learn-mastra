@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "4111:4111"
+    volumes:
+      - .:/app
+      - ./packages/mastra/src:/app/src/mastra
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env 
