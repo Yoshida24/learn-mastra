@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "mastra dev",
-    "curl": "curl -X POST http://localhost:4111/api/agents/weatherAgent/generate -H \"Content-Type: application/json\" -d '{\"messages\": [\"東京の現在の気温は？\"]}' | jq"
+    "try-agent": "curl -X POST http://localhost:4111/api/agents/weatherAgent/generate -H \"Content-Type: application/json\" -d '{\"messages\": [\"東京の現在の気温は？\"]}' | jq"
   },
   "keywords": [],
   "author": "",
