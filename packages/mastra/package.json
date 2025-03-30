@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "mastra dev",
-    "try-agent": "curl -X POST http://localhost:4111/api/agents/weatherAgent/generate -H \"Content-Type: application/json\" -d '{\"messages\": [\"東京の現在の気温は？\"]}' | jq"
+    "try-agent": "curl -X POST http://localhost:4111/api/agents/weatherAgent/generate -H \"Content-Type: application/json\" -d '{\"messages\": [\"東京の現在の気温は？\"]}' | jq",
+    "try-rag": "curl -X POST http://localhost:4111/api/agents/ragAgent/generate -H \"Content-Type: application/json\" -d '{\"messages\": [\"マストラの主な機能を教えてください\"]}' | jq"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,9 @@
   "dependencies": {
     "@ai-sdk/anthropic": "1.2.2",
     "@mastra/core": "0.7.0",
+    "@mastra/qdrant": "0.2.5",
+    "@mastra/rag": "0.1.14",
+    "@qdrant/js-client-rest": "1.8.1",
     "mastra": "0.4.4",
     "zod": "3.24.2"
   },

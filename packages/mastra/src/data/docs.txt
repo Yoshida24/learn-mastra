@@ -1,0 +1,30 @@
+マストラ（Mastra）は、AI駆動のエージェントを簡単に作成するためのフレームワークです。
+
+主な機能：
+1. エージェント作成：複数のAIモデルを組み合わせたインテリジェントなエージェントを作成できます。
+2. ツール統合：外部APIやサービスと連携する機能を簡単に追加できます。
+3. ワークフロー：複雑なタスクを自動化するためのワークフローを構築できます。
+4. メモリ機能：エージェントが過去の会話を記憶し、文脈を理解できます。
+5. RAG（検索拡張生成）：ドキュメントや知識ベースから情報を検索して回答の質を向上させます。
+
+インストール方法：
+```
+npm install mastra @mastra/core
+```
+
+使用例：
+```typescript
+import { Mastra } from '@mastra/core/mastra';
+import { createLogger } from '@mastra/core/logger';
+import { myAgent } from './agents/my-agent';
+
+export const mastra = new Mastra({
+  agents: { myAgent },
+  logger: createLogger({
+    name: 'Mastra',
+    level: 'info',
+  }),
+});
+```
+
+マストラは継続的に進化しており、新しい機能が定期的に追加されています。詳細なドキュメントはマストラの公式サイトで確認できます。 

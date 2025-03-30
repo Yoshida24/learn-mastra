@@ -23,5 +23,14 @@ learn-mastra/
 make dev
 ```
 
-## Swagger UI
+## Mastora 
+
+Web UI  
+http://localhost:4111/agents
+
+Swagger UI  
 http://localhost:4111/swagger-ui
+
+
+## Qdrant dashboard
+http://localhost:6333/dashboard#/welcome
