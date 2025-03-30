@@ -13,7 +13,7 @@
   "description": "",
   "type": "module",
   "mastra": {
-    "entry": "packages/mastra/src/index.ts"
+    "entry": "src/index.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.2.2",

@@ -15,6 +15,6 @@ down:
 # コンテナ、イメージ、ボリュームの削除
 clean:
 	docker-compose down --rmi all --volumes
-	rm -rf node_modules
-	rm -rf dist
-	rm -rf .mastra 
+	rm -rf packages/mastra/node_modules
+	rm -rf packages/mastra/dist
+	rm -rf packages/mastra/.mastra 

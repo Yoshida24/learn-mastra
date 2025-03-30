@@ -8,13 +8,10 @@ RUN npm install
 
 # TypeScriptの設定ファイルをコピー
 COPY tsconfig.json ./
-COPY packages/mastra/src/* /app/src/mastra/
 
-# ソースコードをコピー
-COPY packages ./packages
-
-# Mastraが期待する場所にファイルを配置
+# ソースコードをMastraが期待する場所に直接コピー
 RUN mkdir -p /app/src/mastra
+COPY src /app/src/mastra
 
 EXPOSE 4111
 
