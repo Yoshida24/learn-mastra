@@ -1,6 +1,14 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 
+interface GeocodingResponse {
+    results: {
+        latitude: number;
+        longitude: number;
+        name: string;
+    }[];
+}
+
 interface WeatherResponse {
     current: {
         time: string;
