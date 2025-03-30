@@ -9,7 +9,7 @@ const OpenAI = require('openai');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 // 設定
-const COLLECTION_NAME = 'text_collection';
+const COLLECTION_NAME = 'movies';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY; // 環境変数から取得
 const VECTOR_SIZE = 3072; // text-embedding-3-large の次元数
 const QDRANT_URL = process.env.QDRANT_URL || 'http://localhost:6333'; // 環境変数からQdrant URLを取得
@@ -87,15 +87,15 @@ async function createEmbedding(text) {
   }
 }
 
-// ベクトルとメタデータをQdrantに保存
+// ベクトルとメタデータをQdrantにupsert
 async function uploadToQdrant(vectors) {
   try {
-    // 一括アップロード
+    // 一括upsert
     await qdrantClient.upsert(COLLECTION_NAME, {
       wait: true,
       points: vectors
     });
-    console.log(`${vectors.length}件のベクトルをアップロードしました`);
+    console.log(`${vectors.length}件のベクトルをupsertしました`);
   } catch (error) {
     console.error('アップロードエラー:', error);
     throw error;
@@ -112,7 +112,7 @@ async function main() {
     const vectors = [];
     for (let i = 0; i < data.length; i++) {
       const item = data[i];
-      console.log(`テキスト ${i+1}/${data.length} を処理中...`);
+      console.log(`テキスト ${i+1}/${data.length} をupsert/更新中...`);
       
       const embedding = await createEmbedding(item.text);
       vectors.push({
@@ -128,7 +128,7 @@ async function main() {
     // ベクトルをQdrantにアップロード
     await uploadToQdrant(vectors);
     
-    console.log('処理が完了しました。');
+    console.log('upsertが完了しました。');
   } catch (error) {
     console.error('エラーが発生しました:', error);
   }

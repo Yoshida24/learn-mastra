@@ -34,12 +34,12 @@ export const qdrantTool = createTool({
   },
 });
 
-const searchQdrant = async (query: string, limit: number=10, collection: string = 'midjourney'): Promise<QdrantSearchResponse> => {
+const searchQdrant = async (query: string, limit: number=10, collection: string = 'movies'): Promise<QdrantSearchResponse> => {
   const queryVector = await getEmbedding(query);
 
   // Query
   const data = await vectorStore.query({
-    indexName: collection,
+    indexName: 'movies',
     queryVector: queryVector,
     topK: limit,
     // filter: { text: { $eq: 'doc1' } }, // optional filter
