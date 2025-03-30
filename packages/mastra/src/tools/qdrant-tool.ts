@@ -1,63 +1,71 @@
 import { z } from "zod";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import { createTool } from "@mastra/core/tools";
+import { QdrantVector } from '@mastra/qdrant';
+import { QueryResult } from "@mastra/core";
 
-// 現在のファイルのディレクトリパスを取得
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const vectorStore = new QdrantVector(
+  'http://qdrant:6333', // Dockerサービス名を使用
+);
 
-// データファイルのパスを指定
-const dataPath = path.join(__dirname, "../data/docs.txt");
+interface QdrantSearchResponse {
+  results: {
+    id: string;
+    score: number;
+    document: string | undefined;
+    metadata?: Record<string, any>;
+    vector?: number[]
+  }[];
+}
 
-// RAGツールの定義
-export const qdrantTool = {
-  name: "rqdrant-tool",
-  description: "ベクタDBによるRAGのための検索を提供するツールです。",
-  schema: z.object({
-    query: z.string().describe("検索クエリ").optional(),
+export const qdrantTool = createTool({
+  id: "qdrant-search",
+  description: "Qdrantベクトルデータベースを使用してRAG検索を行います。",
+  inputSchema: z.object({
+    query: z.string().describe("検索クエリ"),
+    collection: z.string().describe("検索対象のコレクション名").default("documents"),
+    limit: z.number().describe("取得する結果の最大数").default(5),
   }),
-  async handler(params: { query?: string }) {
-    try {
-      const query = params.query || "マストラ";
-      
-      // ドキュメントの内容を読み込む
-      let docContent = "";
-      try {
-        docContent = fs.readFileSync(dataPath, "utf-8");
-      } catch (err) {
-        console.error("ドキュメント読み込みエラー:", err);
-        return {
-          message: "ドキュメントの読み込みに失敗しました。管理者に連絡してください。"
-        };
-      }
-
-      // 単純なキーワードマッチングを実行（簡易版RAG）
-      const lines = docContent.split('\n');
-      const matchingLines = lines.filter(line => 
-        line.toLowerCase().includes(query.toLowerCase())
-      );
-      
-      if (matchingLines.length === 0) {
-        return {
-          message: "申し訳ありませんが、関連する情報が見つかりませんでした。別のクエリで試してみてください。"
-        };
-      }
-      
-      // 結果を整形して返す
-      const formattedResults = matchingLines.map((line, index) => {
-        return `情報 ${index + 1}:\n${line}\n`;
-      }).join("\n");
-      
-      return {
-        message: `検索結果:\n${formattedResults}`
-      };
-    } catch (error) {
-      console.error("検索エラー:", error);
-      return {
-        message: "検索中にエラーが発生しました。もう一度お試しください。"
-      };
-    }
+  outputSchema: z.object({
+    results: z.array(z.object({
+      id: z.string(),
+      score: z.number(),
+      document: z.string().optional(),
+      name: z.string().optional(),
+    })),
+  }),
+  execute: async ({ context }) => {
+    return await searchQdrant(context.query, context.collection, context.limit);
   },
+});
+
+const searchQdrant = async (query: string, collection: string, limit: number): Promise<QdrantSearchResponse> => {
+  collection = 'midjourney'
+  const queryVector = await getEmbedding(query);
+  const topK = 10;
+
+  // Query
+  const data = await vectorStore.query({
+    indexName: collection,
+    queryVector: queryVector,
+    topK: topK,
+    // filter: { text: { $eq: 'doc1' } }, // optional filter
+    includeVector: false // includeVector
+  });
+  
+  return {
+    results: data.map(item => ({
+      id: item.id,
+      score: item.score,
+      document: item.document,
+      metadata: item.metadata,
+      vector: item.vector,
+    }))
+  };
+};
+
+// 簡易的な埋め込み取得関数（実際の実装では適切な埋め込みモデルを使用すること）
+async function getEmbedding(text: string): Promise<number[]> {
+  // 実際のプロジェクトでは、OpenAIやその他の埋め込みモデルを使用します
+  // ここでは簡易的なランダム埋め込みを返します（実際の実装では置き換えてください）
+  return Array.from({ length: 512 }, () => Math.random() - 0.5);
 } 
