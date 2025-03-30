@@ -2,24 +2,20 @@ import { z } from "zod";
 import { createTool } from "@mastra/core/tools";
 import { QdrantVector } from '@mastra/qdrant';
 import { QueryResult } from "@mastra/core";
+import { openai } from "@ai-sdk/openai";
+import { embed } from "ai";
 
 const vectorStore = new QdrantVector(
   'http://qdrant:6333', // Dockerサービス名を使用
 );
 
 interface QdrantSearchResponse {
-  results: {
-    id: string;
-    score: number;
-    document: string | undefined;
-    metadata?: Record<string, any>;
-    vector?: number[]
-  }[];
+  results: QueryResult[];
 }
 
 export const qdrantTool = createTool({
   id: "qdrant-search",
-  description: "Qdrantベクトルデータベースを使用してRAG検索を行います。",
+  description: "Qdrantベクトルデータベースを使用してドキュメント検索を行います。",
   inputSchema: z.object({
     query: z.string().describe("検索クエリ"),
     collection: z.string().describe("検索対象のコレクション名").default("documents"),
@@ -34,20 +30,18 @@ export const qdrantTool = createTool({
     })),
   }),
   execute: async ({ context }) => {
-    return await searchQdrant(context.query, context.collection, context.limit);
+    return await searchQdrant(context.query, context.limit, context.collection);
   },
 });
 
-const searchQdrant = async (query: string, collection: string, limit: number): Promise<QdrantSearchResponse> => {
-  collection = 'midjourney'
+const searchQdrant = async (query: string, limit: number=10, collection: string = 'midjourney'): Promise<QdrantSearchResponse> => {
   const queryVector = await getEmbedding(query);
-  const topK = 10;
 
   // Query
   const data = await vectorStore.query({
     indexName: collection,
     queryVector: queryVector,
-    topK: topK,
+    topK: limit,
     // filter: { text: { $eq: 'doc1' } }, // optional filter
     includeVector: false // includeVector
   });
@@ -63,9 +57,18 @@ const searchQdrant = async (query: string, collection: string, limit: number): P
   };
 };
 
-// 簡易的な埋め込み取得関数（実際の実装では適切な埋め込みモデルを使用すること）
+// OpenAI text-embedding-3-large を使用した埋め込み生成関数
 async function getEmbedding(text: string): Promise<number[]> {
-  // 実際のプロジェクトでは、OpenAIやその他の埋め込みモデルを使用します
-  // ここでは簡易的なランダム埋め込みを返します（実際の実装では置き換えてください）
-  return Array.from({ length: 512 }, () => Math.random() - 0.5);
+  try {
+    const { embedding } = await embed({
+      model: openai.embedding('text-embedding-3-large'),
+      value: text,
+      maxRetries: 1,
+    });
+    
+    return embedding;
+  } catch (error) {
+    console.error('埋め込み生成中にエラーが発生しました:', error);
+    throw error;
+  }
 } 
