@@ -16,10 +16,10 @@
     "entry": "src/index.ts"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^1.2.2",
-    "@mastra/core": "^0.7.0",
-    "mastra": "^0.4.4",
-    "zod": "^3.24.2"
+    "@ai-sdk/anthropic": "1.2.2",
+    "@mastra/core": "0.7.0",
+    "mastra": "0.4.4",
+    "zod": "3.24.2"
   },
   "devDependencies": {
     "@types/node": "22.13.14",
