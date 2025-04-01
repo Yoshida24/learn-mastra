@@ -2,6 +2,10 @@
 
 # 開発サーバーの起動
 dev:
+	docker-compose up qdrant & (cd packages/mastra && npm run dev)
+
+# 本番サーバーの起動
+up:
 	docker-compose up --build
 
 # コンテナの停止と削除
