@@ -5,6 +5,7 @@ WORKDIR /app
 # パッケージのインストール
 COPY package*.json /app
 RUN npm install
+RUN pip install mcp-server-fetch
 
 # TypeScriptの設定ファイルをコピー
 COPY tsconfig.json /app
